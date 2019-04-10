@@ -4,11 +4,17 @@
              xmlns:local="clr-namespace:MangaToolsApp"
              x:Class="MangaToolsApp.MainPage">
 
-    <StackLayout>
+    <StackLayout VerticalOptions="Center">
         <!-- Place new controls here -->
-        <Label Text="Welcome to Xamarin.Forms!" 
-           HorizontalOptions="Center"
-           VerticalOptions="CenterAndExpand" />
+        <Label Text="Welcome to Manga Tools"
+               HorizontalOptions="Center"/>
+        <Entry x:Name="IdEntry"
+               Placeholder="Manga ID"
+               Margin="20,10,20,0"/>
+        <Button x:Name="SearchBtn" 
+                Text="Search"
+                Margin="30,10,30,0"
+                Clicked="SearchBtn_Clicked"/>
     </StackLayout>
 
 </ContentPage>

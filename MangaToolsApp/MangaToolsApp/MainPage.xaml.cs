@@ -13,5 +13,15 @@ namespace MangaToolsApp
         {
             InitializeComponent();
         }
+
+        private void SearchBtn_Clicked(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(IdEntry.Text))
+            {
+                return;
+            }
+
+            Navigation.PushAsync(new ChapterListPage());
+        }
     }
 }
