@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -9,6 +10,11 @@ using Newtonsoft.Json.Linq;
 
 namespace MangaDownloader
 {
+    public enum LanguageFilter
+    {
+        English,
+    }
+
     [Serializable]
     public class MangaInfo : IEnumerable
     {
@@ -27,20 +33,21 @@ namespace MangaDownloader
         private string artist;
         public string Artist { get { return artist; } }
 
-        private List<ChapterInfo> chapters = new List<ChapterInfo>();
-        public ChapterInfo this[int index] {
+        private List<string> chapters = new List<string>(); // Id's of chapters
+        public List<string> Chapters { get { return chapters; } }
+        public string this[int index] {
             get { return chapters[index]; }
         }
 
         public int Count { get { return chapters.Count; } }
 
-        public MangaInfo(string json)
+        public MangaInfo(string json, LanguageFilter languageFilter = LanguageFilter.English)
         {
-            parseJson(json);
+            parseJson(json, languageFilter);
         }
 
-        //parseJson
-        private void parseJson(string json)
+        // parseJson
+        private void parseJson(string json, LanguageFilter languageFilter)
         {
             try
             {
@@ -53,26 +60,27 @@ namespace MangaDownloader
                     author = jsonObj.manga.author;
                     artist = jsonObj.manga.artist;
 
-                    List<string> chapterIds = new List<string>();
                     foreach (dynamic item in jsonObj.chapter)
                     {
-                        chapterIds.Add(item.Name);
+                        try
+                        {
+                            switch (languageFilter)
+                            {
+                                case LanguageFilter.English:
+                                    if (jsonObj.chapter[item.Name].lang_code == "gb")
+                                    {
+                                        chapters.Add(item.Name);
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException ex)
+                        {
+                            chapters.Add(item.Name);
+                        }
                     }
-
-                    Parallel.ForEach(chapterIds, async (id) =>
-                    {
-                        Console.WriteLine(id);
-                        ChapterInfo newChapter = Downloader.GetChapter(id);
-                        chapters.Add(newChapter);
-                    });
-
-                    //Parallel -> non async getChapter
-
-                    //foreach (string id in chapterIds)
-                    //{
-                    //    ChapterInfo newChapter = await Downloader.GetChapterAsync(id);
-                    //    chapters.Add(newChapter);
-                    //}
                 }
             }
             catch (JsonReaderException ex)

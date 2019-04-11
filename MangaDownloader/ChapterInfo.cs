@@ -27,6 +27,9 @@ namespace MangaDownloader
         private string server;
         public string Server { get { return server; } }
 
+        private string langCode;
+        public string LangCode { get { return langCode; } }
+
         public List<PageInfo> pages = new List<PageInfo>();
         public PageInfo this[int index] {
             get
@@ -72,6 +75,7 @@ namespace MangaDownloader
                     number = jsonObj.chapter;
                     mangaId = jsonObj.manga_id;
                     server = jsonObj.server;
+                    langCode = jsonObj.lang_code;
                     createPages(jsonObj.page_array.ToObject<string[]>());
                 }
             }
@@ -92,6 +96,7 @@ namespace MangaDownloader
             number = -1;
             mangaId = string.Empty;
             server = string.Empty;
+            langCode = string.Empty;
         }
 
         public IEnumerator GetEnumerator()

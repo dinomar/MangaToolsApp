@@ -9,10 +9,22 @@ using System.Drawing;
 
 namespace MangaDownloader
 {
-    public static class Downloader
+    public class Downloader
     {
         private const string apiMangaUrl = "https://mangadex.org/api/manga/";
         private const string apiChapterUrl = "https://mangadex.org/api/chapter/";
+
+        public event EventHandler<MangaDownloadedEventArgs> OnMangaDownloaded;
+        private void onMangaDownloaded(MangaDownloadedEventArgs e)
+        {
+            OnMangaDownloaded?.Invoke(this, e);
+        }
+
+        public event EventHandler<ChapterDownloadedEventArgs> OnChapterDownloaded;
+        private void onChapterDownloaded(ChapterDownloadedEventArgs e)
+        {
+            OnChapterDownloaded?.Invoke(this, e);
+        }
 
         // Get MangaInfo
         public static MangaInfo GetManga(string mangaId)
@@ -49,7 +61,7 @@ namespace MangaDownloader
         }
 
         // Get MangaInfo Async
-        public static async Task<MangaInfo> GetMangaAsync(string mangaId)
+        public async Task<MangaInfo> GetMangaAsync(string mangaId)
         {
             Uri uri;
             try
@@ -63,20 +75,23 @@ namespace MangaDownloader
                     // parse json
                     MangaInfo manga = new MangaInfo(json);
 
+                    // Fire OnMangaDownloadedEvent
+                    onMangaDownloaded(new MangaDownloadedEventArgs(manga));
+
                     return manga;
                 }
             }
             catch (IndexOutOfRangeException ex)
             {
-                throw ex;
+                onMangaDownloaded(new MangaDownloadedEventArgs(ex));
             }
             catch (ArgumentException ex)
             {
-                throw ex;
+                onMangaDownloaded(new MangaDownloadedEventArgs(ex));
             }
             catch (WebException ex)
             {
-                throw ex;
+                onMangaDownloaded(new MangaDownloadedEventArgs(ex));
             }
             return null;
         }
@@ -116,7 +131,7 @@ namespace MangaDownloader
         }
         
         // Get ChapterInfo Async
-        public static async Task<ChapterInfo> GetChapterAsync(string chapterId)
+        public async Task<ChapterInfo> GetChapterAsync(string chapterId)
         {
             Uri uri;
             try
@@ -130,20 +145,23 @@ namespace MangaDownloader
                     // parse json
                     ChapterInfo chapter = new ChapterInfo(json);
 
+                    // Fire OnChapterDownloaded Event
+                    onChapterDownloaded(new ChapterDownloadedEventArgs(chapter));
+
                     return chapter;
                 }
             }
             catch (IndexOutOfRangeException ex)
             {
-                throw ex;
+                onChapterDownloaded(new ChapterDownloadedEventArgs(ex));
             }
             catch (ArgumentException ex)
             {
-                throw ex;
+                onChapterDownloaded(new ChapterDownloadedEventArgs(ex));
             }
             catch (WebException ex)
             {
-                throw ex;
+                onChapterDownloaded(new ChapterDownloadedEventArgs(ex));
             }
             return null;
         }
@@ -169,7 +187,7 @@ namespace MangaDownloader
         }
 
         // Download Chapter Async
-        private static async Task<string> downloadInfoAsync(Uri uri)
+        private async Task<string> downloadInfoAsync(Uri uri)
         {
             try
             {
@@ -216,7 +234,7 @@ namespace MangaDownloader
         }
 
         // Download Image Async
-        public static async Task<Bitmap> DownloadImageAsync(PageInfo page)
+        public async Task<Bitmap> DownloadImageAsync(PageInfo page)
         {
             Uri uri;
             if (!Uri.TryCreate(page.Url, UriKind.RelativeOrAbsolute, out uri))
@@ -241,20 +259,7 @@ namespace MangaDownloader
                 throw ex;
             }
         }
-
-        //private static string formatUrl(string url)
-        //{
-        //    try
-        //    {
-        //        string[] tempUrl = url.Split('/');
-
-        //        string chapterId = tempUrl[tempUrl.Length - 2];
-        //        return string.Format(apiUrl, chapterId);
-        //    }
-        //    catch (IndexOutOfRangeException ex)
-        //    {
-        //        throw ex;
-        //    }
-        //}
     }
 }
+
+// Move mangainfo,chapterinfo download into class. add onEvents

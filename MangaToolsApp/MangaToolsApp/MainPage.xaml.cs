@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
+using MangaDownloader;
+
 namespace MangaToolsApp
 {
     public partial class MainPage : ContentPage
@@ -16,12 +18,11 @@ namespace MangaToolsApp
 
         private void SearchBtn_Clicked(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(IdEntry.Text))
+            Console.WriteLine("Search Btn Click");
+            if (!string.IsNullOrEmpty(IdEntry.Text))
             {
-                return;
+                Navigation.PushAsync(new ChapterListPage(IdEntry.Text));
             }
-
-            Navigation.PushAsync(new ChapterListPage());
         }
     }
 }

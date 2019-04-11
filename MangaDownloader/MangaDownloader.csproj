@@ -50,8 +50,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChapterDownloadedEventArgs.cs" />
     <Compile Include="ChapterInfo.cs" />
     <Compile Include="Downloader.cs" />
+    <Compile Include="MangaDownloadedEventArgs.cs" />
     <Compile Include="MangaInfo.cs" />
     <Compile Include="PageInfo.cs" />
     <Compile Include="Program.cs" />
